@@ -208,33 +208,4 @@ url-shortener/
 └── .env.example
 ```
 
----
 
-## Key Engineering Decisions
-
-**Why Base62 over UUID?**
-UUIDs are 36 characters and random. Base62 encodes the DB id so codes are short, URL-safe, and guaranteed unique without any collision checking.
-
-**Why Redis for caching?**
-Redis operates in microseconds vs PostgreSQL's milliseconds. A popular short URL getting millions of hits would destroy a DB without caching. Cache-aside means only the first visit hits PostgreSQL.
-
-**Why Redis for rate limiting?**
-Redis `INCR` is atomic — even with 1000 concurrent requests, every increment is counted correctly. TTL handles the time window automatically without any scheduled cleanup jobs.
-
-**Why Docker?**
-Reproducible environment. Anyone can clone and run with two commands regardless of their OS.
-
----
-
-## Resume Bullet Points
-
-- Built distributed URL shortener with Base62 encoding, serving redirects via Redis cache-aside pattern with sub-millisecond latency
-- Implemented IP-based rate limiting (10 req/min) using atomic Redis TTL counters, returning HTTP 429 on threshold breach
-- Designed click analytics system combining PostgreSQL (metadata) and Redis (atomic counters) for real-time stats
-- Containerized PostgreSQL and Redis with Docker Compose for reproducible local development
-
----
-
-## License
-
-MIT
